@@ -1,0 +1,104 @@
+Create and Manage Cloud Resources: Challenge Lab - New 2023
+
+Task 1. Create a project jumphost instance
+
+gcloud compute instances create <ganti dengan Instance_name> \
+          --network nucleus-vpc \
+          --zone <ganti_dengan_nama_zone>  \
+          --machine-type e2-micro  \
+          --image-family debian-11  \
+          --image-project debian-cloud 
+
+Task 2. Create a Kubernetes service cluster
+
+gcloud container clusters create nucleus-backend \
+          --num-nodes 1 \
+          --network nucleus-vpc \
+          --zone <ganti_dengan_nama_zone>
+gcloud container clusters get-credentials nucleus-backend \
+          --zone <ganti_dengan_nama_zone>
+
+kubectl create deployment hello-server \
+          --image=gcr.io/google-samples/hello-app:2.0
+
+kubectl expose deployment hello-server \
+          --type=LoadBalancer \
+          --port <ganti_dengan_App_port_number>
+
+Task 3. Set up an HTTP load balancer
+
+cat << EOF > startup.sh
+#! /bin/bash
+apt-get update
+apt-get install -y nginx
+service nginx start
+sed -i -- 's/nginx/Google Cloud Platform - '"\$HOSTNAME"'/' /var/www/html/index.nginx-debian.html
+EOF
+
+#membuat instance template
+
+gcloud compute instance-templates create web-server-template \
+          --metadata-from-file startup-script=startup.sh \
+          --network nucleus-vpc \
+          --machine-type g1-small \
+          --region us-east1
+
+#membuat managed instance group
+
+gcloud compute instance-groups managed create web-server-group \
+          --base-instance-name web-server \
+          --size 2 \
+          --template web-server-template \
+          --region us-east1
+
+#membuat firewall rules
+
+gcloud compute firewall-rules create <ganti_dengan_Firewall_rule> \
+          --allow tcp:80 \
+          --network nucleus-vpc
+
+#membuat health checks
+
+gcloud compute http-health-checks create http-basic-check
+gcloud compute instance-groups managed \
+          set-named-ports web-server-group \
+          --named-ports http:80 \
+          --region us-east1
+
+#membuat backend service
+
+gcloud compute backend-services create web-server-backend \
+          --protocol HTTP \
+          --http-health-checks http-basic-check \
+          --global
+gcloud compute backend-services add-backend web-server-backend \
+          --instance-group web-server-group \
+          --instance-group-region us-east1 \
+          --global
+
+
+#membuat url maps
+
+gcloud compute url-maps create web-server-map \
+          --default-service web-server-backend
+gcloud compute target-http-proxies create http-lb-proxy \
+          --url-map web-server-map
+
+#membuat forwarding rules
+
+gcloud compute forwarding-rules create http-content-rule \
+        --global \
+        --target-http-proxy http-lb-proxy \
+        --ports 80
+gcloud compute forwarding-rules list
+
+
+Tunggu sekitar 5 - 7 menit ( hingga airnya mendidih, lalu seduh ke gelas berisi kopi ) hingga score mencapai 100
+
+Selamat, Anda telah berhasil lolos dari Lab Tantangan Create and Manage Cloud Resources
+
+
+Kunjungi channel Play with Me di https://youtube.com/@riesurya untuk video-video lab lainnya
+
+
+
