@@ -93,12 +93,13 @@ gcloud compute forwarding-rules create http-content-rule \
 gcloud compute forwarding-rules list
 
 
-Tunggu sekitar 5 - 7 menit ( hingga airnya mendidih, lalu seduh ke gelas berisi kopi ) hingga score mencapai 100
+Tunggu sekitar 5 menit hingga score mencapai 100
 
-Selamat, Anda telah berhasil lolos dari Lab Tantangan Create and Manage Cloud Resources
-
+Selamat, Anda telah berhasil lolos dari Lab Tantangan : Create and Manage Cloud Resources
 
 Kunjungi channel Play with Me di https://youtube.com/@riesurya untuk video-video lab lainnya
+
+( pastikan teks pada tombol Subscribe di channel tersebut berubah menjadi Subscribed :D )
 
 
 
