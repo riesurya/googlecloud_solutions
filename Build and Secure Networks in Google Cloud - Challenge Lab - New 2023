@@ -1,0 +1,67 @@
+Build and Secure Networks in Google Cloud - Challenge Lab - New 2023
+
+Video URL : 
+
+#di Gcloud Shell
+( buka Compute Engine - cek zone pada VM )
+
+export IAP_NETWORK_TAG=ganti dengan SSH IAP network tag
+
+export INTERNAL_NETWORK_TAG=ganti dengan SSH internal network tag
+
+export HTTP_NETWORK_TAG=ganti dengan HTTP network tag
+
+export ZONE=ganti dengan nama zone 
+
+
+1. Remove the overly permissive rules.
+gcloud compute firewall-rules delete open-access
+
+
+2. Start the bastion host instance 
+
+	    Compute Engine - Instance - bastion - Start
+
+
+3. Create a firewall rule that allows SSH (tcp/22) from the IAP service and add network tag on bastion
+
+gcloud compute firewall-rules create ssh-ingress --allow=tcp:22 --source-ranges 35.235.240.0/20 --target-tags $IAP_NETWORK_TAG --network acme-vpc
+
+ 
+gcloud compute instances add-tags bastion --tags=$IAP_NETWORK_TAG --zone=$ZONE
+ 
+
+4. Create a firewall rule that allows traffic on HTTP (tcp/80) to any address and add network tag on juice-shop
+
+gcloud compute firewall-rules create http-ingress --allow=tcp:80 --source-ranges 0.0.0.0/0 --target-tags $HTTP_NETWORK_TAG --network acme-vpc
+ 
+gcloud compute instances add-tags juice-shop --tags=$HTTP_NETWORK_TAG --zone=$ZONE
+
+ 
+5. Create a firewall rule that allows traffic on SSH (tcp/22) from acme-mgmt-subnet 
+
+gcloud compute firewall-rules create internal-ssh-ingress --allow=tcp:22 --source-ranges 192.168.10.0/24 --target-tags $INTERNAL_NETWORK_TAG --network acme-vpc
+
+gcloud compute instances add-tags juice-shop --tags=$INTERNAL_NETWORK_TAG --zone=$ZONE
+ 
+
+6. SSH to bastion host via IAP and juice-shop via bastion
+
+#Compute Engine -> VM Instances, klik tombol SSH pada bastion host. 
+
+#Akses SSH ke juice-shop : 
+#( di dalam SSH terminal bastion )
+ 
+gcloud compute ssh juice-shop --internal-ip
+
+
+
+====================================
+Selamat, Anda telah berhasil lolos dari Build and Secure Networks in Google Cloud : Challenge Lab
+
+
+Temukan solusi video lab Google Cloud Learning Journey di Channel Play with Me
+https://youtube.com/@riesurya 
+
+Pastikan teks Subcribe di channel tersebut berubah menjadi Subcribed 😀
+
