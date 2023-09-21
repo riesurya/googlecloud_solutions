@@ -5,63 +5,69 @@ Video : https://youtube.com/@riesurya
 
 Task 1- Preparasi
 
-Membuat dataset BigQuery 
+1. Membuat dataset BigQuery 
 
 dataset bq mk <ganti dengan BigQuery Dataset Name>
 
-Membuat Cloud Storage Bucket
+2. Membuat Cloud Storage Bucket
 
 gsutil mb gs://<ganti dengan Cloud Storage Bucket Name>
 
-Buat salinan berkas lab.csv ke home directory 
+3. Buat salinan berkas lab.csv ke home directory 
 
 gsutil cp gs://cloud-training/gsp323/lab.csv .
 
-Buat salinan berkas lab.schema ke home directory 
+4. Buat salinan berkas lab.schema ke home directory 
 
 gsutil cp gs://cloud-training/gsp323/lab.schema .
 
-Tampilkan isi berkas lab.schema
+5. Tampilkan isi berkas lab.schema
 cat lab.schema
 
 	Note : copas hasil cat lab.schema ke text editor 
 
+====
 
 Task 1 : Run a simple Dataflow job
+ 
+   Simak video dengan cermat
 
-Simak video dengan cermat
-
+===
 
 Task 2 : Run a simple Dataproc job
 
 Simak video dengan cermat
 
+====
 
 Task 3 dan 4 : Preparasi
-Menyiapkan API key lalu simpan sebagai variabel API_KEY variable
 
-Console Search box , ketik Credentials dan create API Key
+1. Menyiapkan API key lalu simpan sebagai variabel API_KEY variable
+
+   Console Search box , ketik Credentials dan create API Key
 
 export API_KEY=
 
-Simpan variable  PROJECT_ID
+
+2. Simpan variable  PROJECT_ID
 
 export GOOGLE_CLOUD_PROJECT=$(gcloud config get-value core/project)
 
-Membuat service account baru untuk mengakses Natural Language API:
+
+3. Membuat service account baru untuk mengakses Natural Language API:
 
 gcloud iam service-accounts create riesurya \
   --display-name "my natural language service account"
 
-Membuat kredensial untuk log in menggunakan service account baru tadi. Simpan sebagai berkas key.json di home directory "~/key.json"
+4. Membuat kredensial untuk log in menggunakan service account baru tadi. Simpan sebagai berkas key.json di home directory "~/key.json"
 
 gcloud iam service-accounts keys create ~/key.json \
   --iam-account riesurya@${GOOGLE_CLOUD_PROJECT}.iam.gserviceaccount.com
 
-Siapkan variabel GOOGLE_APPLICATION_CREDENTIALS
+5. Siapkan variabel GOOGLE_APPLICATION_CREDENTIALS
 export GOOGLE_APPLICATION_CREDENTIALS="/home/$USER/key.json"
 
-Otentikasi service account, dengan menggunakan berkas service account key yang dibuat sebelumnya ( langkah 5 ):
+6. Otentikasi service account, dengan menggunakan berkas service account key yang dibuat sebelumnya ( langkah 5 ):
 
 gcloud auth activate-service-account riesurya@${GOOGLE_CLOUD_PROJECT}.iam.gserviceaccount.com --key-file=$GOOGLE_APPLICATION_CREDENTIALS
 
@@ -69,9 +75,9 @@ export BUCKET_TASK_3=<ganti dengan Cloud Speech Location>
 
 export BUCKET_TASK_4=<ganti dengan Cloud Natural Language Location>
 
-Ok lanjut ke Task 3
+7. Ok lanjut ke Task 3
 
-
+====
 
 Task 3 : Use the Google Cloud Speech API
 
@@ -89,7 +95,7 @@ cat > request.json <<EOF
 }
 EOF
 
-2.Periksa berkas request.json dengan perintah : 
+2. Periksa berkas request.json dengan perintah : 
 
 ls
 
@@ -98,11 +104,17 @@ ls
 curl -s -X POST -H "Content-Type: application/json" --data-binary @request.json \
 "https://speech.googleapis.com/v1/speech:recognize?key=${API_KEY}" > result_speech.json
 
-4. Upload result_speech.json ke dalam bucket : $BUCKET_TASK_3
+4. Verifikasi otentikasi sebelum upload ke bucket
 
-5. Lanjut ke Task 4
+gcloud auth login --no-launch-browser
 
+5. Upload result_speech.json ke dalam bucket : $BUCKET_TASK_3
 
+gsutil cp result_speech.json $BUCKET_TASK_3
+
+6. Lanjut ke Task 4
+
+====
 
 Task 4 : Use the Cloud Natural Language API
 
@@ -118,6 +130,7 @@ gsutil cp nat_lang_result.json $BUCKET_TASK_4
 
 4. Sudah selesai … masih mau yang lain ? 
 
+===
 
 Selamat Anda telah lolos dan lulus dari Perform Foundational Data, ML, and AI Tasks in Google Cloud: Challenge Lab
 
